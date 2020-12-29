@@ -5,9 +5,9 @@ import Header from './components/layout/Header';
 
 function App() {
   return (
-    <Fragment>
-      <Header />
-    </Fragment>
+	<Fragment>
+		<Header />
+	</Fragment>
   );
 }
 
