@@ -1,8 +1,13 @@
 
+/** Layout  */
+import { Fragment } from 'react';
+import Header from './components/layout/Header';
 
 function App() {
   return (
-    <h1>Raúl Valdez Piedra</h1>
+    <Fragment>
+      <Header />
+    </Fragment>
   );
 }
 
