@@ -1,9 +1,10 @@
 import React, {useEffect, useState, Fragment} from 'react';
+import { Link } from 'react-router-dom';
 
 // importamos clienteAxios
 import clienteAxios from '../../config/axios';
 
-// importamos componente cliente
+// importamos componentes para cliente
 import Cliente from './Cliente';
 
 function Clientes() {
@@ -36,6 +37,11 @@ function Clientes() {
 		<Fragment>
 			<h2>Clientes</h2>
 
+			<Link to={"/clientes/nuevo"} className="btn btn-verde nvo-cliente">
+				<i className="fas fa-plus-circle"></i>
+            Nuevo Cliente
+         </Link>
+			
 			<ul className="listado-clientes">
 				{clientes.map(cliente => (
 					// console.log(cliente);

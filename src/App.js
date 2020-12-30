@@ -9,6 +9,7 @@ import Navegacion from './components/layout/Navegacion';
 
 /** Componentes */
 import Clientes from './components/clientes/Clientes';
+import NuevoCliente from './components/clientes/NuevoCliente';
 import Productos from './components/productos/Productos';
 import Pedidos from './components/pedidos/Pedidos';
 
@@ -25,6 +26,7 @@ function App() {
 					<Switch>
 
 						<Route exact path="/" component={Clientes} />
+						<Route exact path="/clientes/nuevo" component={NuevoCliente} />
 
 
 						<Route exact path="/productos" component={Productos} />
