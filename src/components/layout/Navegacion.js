@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const Navegacion = () => {
    return (      
       <aside className="sidebar col-3">
-         <h2>Administración</h2>
+         <h2>Administración </h2>
 
          <nav className="navegacion">
             <Link to={"/"} className="clientes">Clientes</Link>

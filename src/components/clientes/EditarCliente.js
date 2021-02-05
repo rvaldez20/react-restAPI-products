@@ -1,23 +1,44 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useState, useEffect} from 'react';
 import Swal from 'sweetalert2';
 import clienteAxios from '../../config/axios';
 
 import {withRouter} from 'react-router-dom';
 
-function NuevoCliente({history}) {
+function EditarCliente(props) {
 
+   // obtenemos el id props->match->parmas->id
+   const { id } = props.match.params;
+  
 	// inicializamos el state- cliente=state | guardarCliente=funcion para modificar el state
-	const [cliente, guardarCliente] = useState({
+	const [cliente, datosCliente] = useState({
 		nombre: '',
 		apellido: '',
 		empresa: '',
 		email: ''
 	});
 
+   // Query a la API
+   const consultarAPI = async () => {
+      const clienteConsulta = await clienteAxios.get(`/clientes/${id}`);
+
+      // para testear
+      // console.log(clienteConsulta.data);
+
+      // lo guardamos en el state
+      datosCliente(clienteConsulta.data);
+   }
+
+
+   // definimos useEffect cuando el componente carga
+   useEffect( () => {
+      consultarAPI();
+   },[]);
+
+
 	// funcion para leer los datos del formulario
 	const actualizarState = e => {
 		// almacenamos lo que el usuuario escribe en el state
-		guardarCliente({
+		datosCliente({
 			// obtenemos una copia del state actual
 			...cliente, 
 			[e.target.name]: e.target.value
@@ -26,16 +47,15 @@ function NuevoCliente({history}) {
 		// console.log(cliente);
 	}
 
-	// añade en la restAPI el nuevo cliente
-	const agregarCliente = e => {
-		e.preventDefault();
-		
-		// enviar peticion POST a axios
-		clienteAxios.post('/clientes', cliente)
-			.then(res => {
-				// console.log(res);
-				// validamos si hay errores de mongo (res.data.code solo existe si hay error)
-				if(res.data.code === 11000) {
+   // Envia una petición por axios para cactualizar el cliente
+   const actualizarCliente = e => {
+      // Hacemos el prevendefault
+      e.preventDefault();
+
+      // peticion por axios
+      clienteAxios.put(`/clientes/${cliente._id}`, cliente)
+         .then(res => {
+            if(res.data.code === 11000) {
 					// existe un error de mongo
 					// console.log('Error de duplicado de Mongo')
 					Swal.fire({
@@ -47,16 +67,19 @@ function NuevoCliente({history}) {
 					// No existen errores
 					// console.log(res.data);
 					Swal.fire(
-						'Se Guardo Correctamente!',
-						res.data.mensaje,
+						'Guardado',
+						'Se Actualizo Correctamente',
 						'success'
 					)
 				}
 
-				// redireccionamos
-				history.push('/');
-			});
-	}
+            // redireccionar
+            props.history.push('/');
+         })
+
+
+   }
+
 
 	// validar el formulario
 	const validarCliente = () => {
@@ -72,19 +95,20 @@ function NuevoCliente({history}) {
 
 	return (
 		<Fragment>
-			<h2>Nuevo Cliente</h2>
+			<h2>Editar Cliente</h2>
 
 			<form
-				onSubmit={agregarCliente}
-			>
+            onSubmit={actualizarCliente}
+         >
 				<legend>Llena todos los campos</legend>
 
 				<div className="campo">
 					<label>Nombre:</label>
 					<input  	type="text" 
 							  	placeholder="Nombre Cliente" 
-								name="nombre" 
+								name="nombre"                         
 								onChange={actualizarState}
+                        value={cliente.nombre}
 					/>
 				</div>
 
@@ -94,6 +118,7 @@ function NuevoCliente({history}) {
 								placeholder="Apellido Cliente" 
 								name="apellido"
 								onChange={actualizarState}
+                        value={cliente.apellido}
 					/>
 				</div>
 		
@@ -103,6 +128,7 @@ function NuevoCliente({history}) {
 								placeholder="Empresa Cliente" 
 								name="empresa"
 								onChange={actualizarState}
+                        value={cliente.empresa}
 					/>
 				</div>
 
@@ -112,13 +138,15 @@ function NuevoCliente({history}) {
 								placeholder="Email Cliente" 
 								name="email"
 								onChange={actualizarState}
+                        value={cliente.email}
+                        // readOnly
 					/>
 				</div>				
 
 				<div className="enviar">
 					<input 	type="submit" 
 								className="btn btn-azul" 
-								value="Agregar Cliente" 
+								value="Guardar Cambios" 
 								disabled={ validarCliente() }
 					/>
 				</div>
@@ -129,4 +157,4 @@ function NuevoCliente({history}) {
 }
 
 // HighOrdenComponet (HOC) es una function que toma un componente y retorna un nuevo componente
-export default withRouter(NuevoCliente);
+export default withRouter(EditarCliente);

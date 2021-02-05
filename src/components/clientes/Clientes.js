@@ -24,14 +24,13 @@ function Clientes() {
 
 		// almacenmos la data en el state
 		guardarClientes(clientesConsulta.data);
-
-
 	}
 
 	//usamos el hook useEffect
+	// se le pasa el cliente para que en dado caso que el state cambie se ejecute el useEfect
 	useEffect( () => {
 		consultarAPI();
-	}, []);
+	}, [clientes]);
 
    return (
 		<Fragment>
@@ -43,8 +42,9 @@ function Clientes() {
          </Link>
 			
 			<ul className="listado-clientes">
+				{/* Se cambia en la arrowfunction las llave por parentesis para hacer el return */}
 				{clientes.map(cliente => (
-					// console.log(cliente);
+					//console.log(cliente);
 					<Cliente
 						key={cliente._id}
 						cliente={cliente}
