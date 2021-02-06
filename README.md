@@ -1,4 +1,4 @@
 # App Clientes-Productos-Pedidos [Frontend]
 
-Fronted with React consumed API.
+Frontend with React consuming a RestAPI
 
