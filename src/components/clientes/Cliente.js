@@ -22,7 +22,7 @@ function Cliente(props) {
 		confirmButtonColor: '#3085d6',
 		cancelButtonColor: '#d33',
 		confirmButtonText: 'Si, Eliminar!',
-		cancelButtonText: 'Cancelar'
+		cancelButtonText: 'No, Cancelar'
 		}).then((result) => {
 			if (result.isConfirmed) {
 				// llmado axios

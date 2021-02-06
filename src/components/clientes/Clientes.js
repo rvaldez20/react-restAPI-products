@@ -1,5 +1,6 @@
 import React, {useEffect, useState, Fragment} from 'react';
 import { Link } from 'react-router-dom';
+import Spinner from '../layout/Spinner';
 
 // importamos clienteAxios
 import clienteAxios from '../../config/axios';
@@ -29,8 +30,11 @@ function Clientes() {
 	//usamos el hook useEffect
 	// se le pasa el cliente para que en dado caso que el state cambie se ejecute el useEfect
 	useEffect( () => {
-		consultarAPI();
+		consultarAPI();		
 	}, [clientes]);
+
+	// spinner de carga
+	if(!clientes.length) return <Spinner />
 
    return (
 		<Fragment>
