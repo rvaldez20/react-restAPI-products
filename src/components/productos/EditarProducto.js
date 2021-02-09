@@ -2,7 +2,7 @@ import React, {Fragment, useState, useEffect} from 'react';
 import Swal from 'sweetalert2';
 import clienteAxios from '../../config/axios';
 import Spinner from '../layout/Spinner';
-import {withRouter} from 'react-router-dom';
+// import {withRouter} from 'react-router-dom';
 
 
 
