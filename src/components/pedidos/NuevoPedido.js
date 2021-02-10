@@ -2,6 +2,8 @@ import React, {Fragment, useState, useEffect} from 'react';
 import clienteAxios from '../../config/axios';
 
 import FormBuscarProducto from './FormBuscarProducto';
+import FormCantidadProducto from './FormCantidadProducto';
+import Swal from 'sweetalert2';
 
 function NuevoPedido(props){
    // extraer el ID del cliente
@@ -13,6 +15,12 @@ function NuevoPedido(props){
 
    // busqueda = state | guardarBusqueda=stateEffect
    const [busqueda, guardarBusqueda] = useState('');
+
+   // productos = state | guardarproductos = stateEffect
+   const [productos, guardarProductos] = useState([]);
+
+   // total = state | guardarTotal= stateeffect
+   const [total, guardarTotal] = useState(0);
 
 
    /******************** USEEFFECT *******************/
@@ -31,7 +39,10 @@ function NuevoPedido(props){
       // ejecutamos la consulta
       consultarAPI();
 
-   }, []);
+      // actualizar el total a pagar
+      actualizarTotal();
+
+   }, [productos]);
 
 
    /******************** METODOS *******************/
@@ -41,13 +52,96 @@ function NuevoPedido(props){
       
       // obtener los productos e la busqueda
       const resultadoBusqueda = await clienteAxios.post(`/productos/busqueda/${busqueda}`);
-      console.log(resultadoBusqueda);
+      // para testear
+      //console.log(resultadoBusqueda);
 
+      // Validamos si obtuvimos un producto, si es asi lo agregamos al state
+      if(resultadoBusqueda.data[0]) {
+         // si hay un producto
+         let productoResultado = resultadoBusqueda.data[0];
+         // console.log(productoResultado);
+         //agregar la llave "producto" (copia id)
+         productoResultado.producto = resultadoBusqueda.data[0]._id;
+         productoResultado.cantidad = 0;
+
+         // guardamos el producto en el state (sacamos una copia del state actual)
+         guardarProductos([...productos, productoResultado]);         
+      } else {
+         // si no hay producto
+         Swal.fire({
+            type: 'error',
+            title: 'No Resultados',
+            text: 'No hay resultados'
+         });
+      }
    }
 
    // almacenar lo que tecleamos para busqueda en el state
    const leerDatosBusqueda = e => {
       guardarBusqueda( e.target.value );
+   }
+
+   // actualiza la cantidad de productos
+   // Disminuye en uno la cantidad
+   const restarProductos = i => {
+      // console.log('Uno Menos...',i);
+
+      // copiar el arreglo original del producto
+      const todosProductos = [...productos];
+
+      // validamos: si esta en cero no s epuede restar
+      if(todosProductos[i].cantidad === 0) return;
+
+      // si es mayor d ecero hace,os el decremento
+      todosProductos[i].cantidad--;
+      
+      // Y lo almacenamos en el state
+      guardarProductos(todosProductos);
+   }
+
+   // Aumenta en uno la cantidad
+   const aumentarProductos = i => {
+      // console.log('Uno mas...',i)
+
+      // copia al arreglo original de productos
+      const todosProductos = [...productos];
+
+      // incrementamos uno
+      todosProductos[i].cantidad++;
+
+      // Guardamos la cantidad en el state
+      guardarProductos(todosProductos);
+   }
+
+   // eliminar un producto del state
+   const eliminarProductoPedido = id => {
+      // console.log(id)      
+
+      // eliminamos el producto en base al ID
+      const todosProductos = productos.filter(producto => producto.producto !== id );
+
+      // lo guardamos en el state
+      guardarProductos(todosProductos);
+   }
+
+
+   // actualizar el total a pagar
+   const actualizarTotal = () => {
+      // si el arreglo de productos es igual a cero el total es cero
+      if (productos.length === 0) {
+         guardarTotal(0);
+         return;
+      } 
+
+      // calculamos el nuevo total
+      let nuevoTotal = 0;
+      
+      
+      // recorrer todos los productos, sus cantidades y precios
+      productos.map( producto => nuevoTotal += (producto.cantidad * producto.precio) );
+
+      // almacenar el total en el state
+      guardarTotal(nuevoTotal);
    }
    
    return (
@@ -62,70 +156,36 @@ function NuevoPedido(props){
          
          <FormBuscarProducto 
             buscarProducto={buscarProducto}
-            leerDatosBusqueda={leerDatosBusqueda}
+            leerDatosBusqueda={leerDatosBusqueda}            
          />
          
 
          <ul className="resumen">
-            <li>
-               <div className="texto-producto">
-                  <p className="nombre">Macbook Pro</p>
-                  <p className="precio">$250</p>
-               </div>
-               <div className="acciones">
-                  <div className="contenedor-cantidad">
-                     <i className="fas fa-minus"></i>
-                     <input type="text" name="cantidad" />
-                     <i className="fas fa-plus"></i>
-                  </div>
-                  <button type="button" className="btn btn-rojo">
-                     <i className="fas fa-minus-circle"></i>
-                           Eliminar Producto
-                  </button>
-               </div>
-            </li>
-            <li>
-               <div className="texto-producto">
-                  <p className="nombre">Macbook Pro</p>
-                  <p className="precio">$250</p>
-               </div>
-               <div className="acciones">
-                  <div className="contenedor-cantidad">
-                     <i className="fas fa-minus"></i>
-                     <input type="text" name="cantidad" />
-                     <i className="fas fa-plus"></i>
-                  </div>
-                  <button type="button" className="btn btn-rojo">
-                     <i className="fas fa-minus-circle"></i>
-                           Eliminar Producto
-                  </button>
-               </div>
-            </li>
-            <li>
-               <div className="texto-producto">
-                  <p className="nombre">Macbook Pro</p>
-                  <p className="precio">$250</p>
-               </div>
-               <div className="acciones">
-                  <div className="contenedor-cantidad">
-                     <i className="fas fa-minus"></i>
-                     <input type="text" name="cantidad" />
-                     <i className="fas fa-plus"></i>
-                  </div>
-                  <button type="button" className="btn btn-rojo">
-                     <i className="fas fa-minus-circle"></i>
-                           Eliminar Producto
-                  </button>
-               </div>
-            </li>
+
+            {productos.map((producto, index) => (
+               <FormCantidadProducto 
+                  key={producto.producto}
+                  producto={producto}
+                  restarProductos={restarProductos}
+                  aumentarProductos={aumentarProductos}
+                  index={index}
+                  eliminarProductoPedido={eliminarProductoPedido}
+               />
+            ))}
+             
          </ul>
-         <div className="campo">
-            <label>Total:</label>
-            <input type="number" name="precio" placeholder="Precio" readonly="readonly" />
-         </div>
-         <div className="enviar">
-            <input type="submit" className="btn btn-azul" value="Agregar Pedido" />
-         </div>
+
+         <p className="total">Total a Pagar: <span>$ {total}</span> </p>
+
+         { total > 0 ? (
+            <form                
+            >
+            
+            <input type="submit" 
+               className="btn btn-verde btn-block"
+               value="Realizar Pedido" />
+            </form>
+         ) : null }
       </Fragment>
 	)
 }
