@@ -1,5 +1,6 @@
 import React, {Fragment, useState, useEffect} from 'react';
 import clienteAxios from '../../config/axios';
+import {withRouter} from 'react-router-dom';
 
 import FormBuscarProducto from './FormBuscarProducto';
 import FormCantidadProducto from './FormCantidadProducto';
@@ -143,12 +144,51 @@ function NuevoPedido(props){
       // almacenar el total en el state
       guardarTotal(nuevoTotal);
    }
+
+   // se guarda el pedido en la DB
+   const realizarPedido = async e => {
+      e.preventDefault();
+
+      // extraemos el ID de la url con props.match.params
+      const { id } = props.match.params;
+
+      // construir el objeto en base a la especificaión de la API
+      const pedido = {
+         "cliente": id ,
+         "pedido": productos,
+         "total": total
+      }
+      // console.log(pedido);
+
+      // almacenarlo en la DB
+      const resultado = await clienteAxios.post(`/pedidos`, pedido)
+      
+      // leer la respuesta
+      if(resultado.status === 200) {
+         // alerta de todo bien
+         Swal.fire({
+            type: 'success',
+            title: 'Se Guardo Correctamente',
+            text: resultado.data.mensaje
+         })
+      } else {
+         // alerta error
+         Swal.fire({
+            type: 'error',
+            title: 'Hubo un Error',
+            text: 'Vuelva a intentarlo'
+         });
+      }
+
+      // redireccionar
+      props.history.push('/pedidos');
+   }
    
    return (
 		<Fragment>
          <h2>Nuevo Pedido</h2>
 
-         <div class="ficha-cliente">
+         <div className="ficha-cliente">
             <h3>Nombre del Cliente:</h3>
             <p>Nombre: {cliente.nombre} {cliente.apellido}</p>
             <p>Correo: {cliente.email}</p>
@@ -178,16 +218,17 @@ function NuevoPedido(props){
          <p className="total">Total a Pagar: <span>$ {total}</span> </p>
 
          { total > 0 ? (
-            <form                
+            <form 
+               onSubmit={realizarPedido}               
             >
             
-            <input type="submit" 
-               className="btn btn-verde btn-block"
-               value="Realizar Pedido" />
+            <input   type="submit" 
+                     className="btn btn-verde btn-block"
+                     value="Realizar Pedido" />
             </form>
          ) : null }
       </Fragment>
 	)
 }
 
-export default NuevoPedido;
+export default withRouter(NuevoPedido);
