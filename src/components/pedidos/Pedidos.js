@@ -1,7 +1,6 @@
 import React, {useEffect, useState, Fragment} from 'react';
 import clienteAxios from '../../config/axios';
-
-import Pedido from './Pedido';
+import DetallesPedido from './DetallesPedido';
 
 function Pedidos(){
 
@@ -34,7 +33,12 @@ function Pedidos(){
 
 			<ul class="listado-pedidos">
 				
-				<Pedido />
+				{pedidos.map( pedido => (
+					<DetallesPedido
+						key={pedido}
+						pedido={pedido}
+					/>
+				))}
 
 				<hr />			
 			</ul>		
