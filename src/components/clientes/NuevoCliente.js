@@ -1,8 +1,9 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useState, useContext} from 'react';
 import Swal from 'sweetalert2';
-import clienteAxios from '../../config/axios';
 
+import clienteAxios from '../../config/axios';
 import {withRouter} from 'react-router-dom';
+import { CRMContext } from '../../context/CRMContext';
 
 function NuevoCliente({history}) {
 
@@ -13,6 +14,9 @@ function NuevoCliente({history}) {
 		empresa: '',
 		email: ''
 	});
+
+	// Definicmos el context
+	const [auth, guardarAuth] = useContext(CRMContext);
 
 	// funcion para leer los datos del formulario
 	const actualizarState = e => {
@@ -31,7 +35,11 @@ function NuevoCliente({history}) {
 		e.preventDefault();
 		
 		// enviar peticion POST a axios
-		clienteAxios.post('/clientes', cliente)
+		clienteAxios.post('/clientes', cliente, {
+			headers: {
+				Authorization: `Bearer ${auth.token}`
+			}
+		})
 			.then(res => {
 				// console.log(res);
 				// validamos si hay errores de mongo (res.data.code solo existe si hay error)
