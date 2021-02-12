@@ -1,9 +1,9 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useState, useContext} from 'react';
 import Swal from 'sweetalert2';
-import clienteAxios from '../../config/axios';
 
-// para redireccionar
+import clienteAxios from '../../config/axios';
 import {withRouter} from 'react-router-dom';
+import { CRMContext } from '../../context/CRMContext';
 
 
 function NuevoProducto(props) {
@@ -18,6 +18,10 @@ function NuevoProducto(props) {
 	
 	// otro state: archivo=state | guardaraArchivo=setState
 	const [archivo, guardarArchivo] = useState('');
+
+
+	// Definicmos el context
+	const [auth, guardarAuth] = useContext(CRMContext);
 
 	/******************** METODOS *******************/
 	// almacena un nuevo producto en la DB
@@ -34,7 +38,8 @@ function NuevoProducto(props) {
 		try {
 			const res = await clienteAxios.post('/productos', formData, {
 				headers: {
-					'Content-Type': 'multipart/form-data'
+					'Content-Type': 'multipart/form-data',
+					'Authorization': `Bearer ${auth.token}`
 				}
 			});
 
