@@ -1,9 +1,15 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
+
 import clienteAxios from '../../config/axios';
+import { CRMContext } from '../../context/CRMContext';
 
 function Cliente(props) {
+
+	// Definicmos el context
+	const [auth, guardarAuth] = useContext(CRMContext);
+
 	// aplicamos destructuring a props para obtener cada cliente, el destructurin se hace con el nombre que le pusimos cuado lo estamos pasando
 	const {cliente} = props;
 	
@@ -26,7 +32,11 @@ function Cliente(props) {
 		}).then((result) => {
 			if (result.isConfirmed) {
 				// llmado axios
-				clienteAxios.delete(`/clientes/${idCliente}`)
+				clienteAxios.delete(`/clientes/${idCliente}`, {
+					headers: {
+						Authorization: `Bearer ${auth.token}`
+					}
+				})
 					.then(res => {
 						Swal.fire(
 							'Eliminado',

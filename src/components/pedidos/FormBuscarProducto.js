@@ -1,6 +1,7 @@
 import React from 'react';
 
 function  FormBuscarProducto(props) {
+
    return(
       <form
          onSubmit={props.buscarProducto}

@@ -1,3 +1,4 @@
+import React from 'react';
 
 function DetallesPedido({pedido}) {
 
@@ -7,7 +8,7 @@ function DetallesPedido({pedido}) {
       <li className="pedido">
          <div className="info-pedido">
             <p className="id">ID: {pedido._id}</p>
-            <p className="nombre">Cliente: {cliente.nombre}</p>
+            <p className="nombre">Cliente: {cliente.nombre} {cliente.apellido}</p>
 
             <div className="articulos-pedido">
                <p className="productos">Artículos Pedido: </p>

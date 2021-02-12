@@ -1,10 +1,12 @@
-import React, {Fragment, useState, useEffect} from 'react';
-import clienteAxios from '../../config/axios';
+import React, {Fragment, useState, useEffect, useContext} from 'react';
 import {withRouter} from 'react-router-dom';
+import Swal from 'sweetalert2';
 
+import clienteAxios from '../../config/axios';
 import FormBuscarProducto from './FormBuscarProducto';
 import FormCantidadProducto from './FormCantidadProducto';
-import Swal from 'sweetalert2';
+import { CRMContext } from '../../context/CRMContext';
+
 
 function NuevoPedido(props){
    // extraer el ID del cliente
@@ -24,25 +26,39 @@ function NuevoPedido(props){
    const [total, guardarTotal] = useState(0);
 
 
+   // Definicmos el context
+	const [auth, guardarAuth] = useContext(CRMContext);
+
    /******************** USEEFFECT *******************/
 
    useEffect( () => {
-      // obtenemos el cliente
-      const consultarAPI = async () => {
-         // consultar cliente actual
-         const resultado = await clienteAxios.get(`/clientes/${id}`);
-         // Tests
-         // console.log(resultado.data);         
-         // Se guarda el cliente en el state
-         guardarCliente(resultado.data);
-      }
+      if(!auth.token !== '') {
+         // obtenemos el cliente
+         const consultarAPI = async () => {
+            // consultar cliente actual
+            const resultado = await clienteAxios.get(`/clientes/${id}`, {
+               headers: {
+                  Authorization: `Bearer ${auth.token}`
+               }
+            });
 
-      // ejecutamos la consulta
-      consultarAPI();
+            // Tests
+            // console.log(resultado.data);         
+            // Se guarda el cliente en el state
+            guardarCliente(resultado.data);
+         }
 
-      // actualizar el total a pagar
-      actualizarTotal();
+         // ejecutamos la consulta
+         consultarAPI();
 
+         // actualizar el total a pagar
+         actualizarTotal();
+      } else {
+
+			//lo redireccionamos a iniciar-sesio
+			props.history.push('/iniciar-sesion');
+			
+		}
    }, [productos]);
 
 
@@ -51,8 +67,15 @@ function NuevoPedido(props){
    const buscarProducto = async e => {
       e.preventDefault();
       
+      // const tokenLocalStorage = localStorage.getItem('token');
+      // console.log(tokenLocalStorage);
+
       // obtener los productos e la busqueda
-      const resultadoBusqueda = await clienteAxios.post(`/productos/busqueda/${busqueda}`);
+      const resultadoBusqueda = await clienteAxios.post(`/productos/busqueda/${busqueda}`, {
+         headers: {
+            Authorization: `Bearer ${auth.token}`
+         }
+      });
       // para testear
       //console.log(resultadoBusqueda);
 
@@ -161,7 +184,11 @@ function NuevoPedido(props){
       // console.log(pedido);
 
       // almacenarlo en la DB
-      const resultado = await clienteAxios.post(`/pedidos`, pedido)
+      const resultado = await clienteAxios.post(`/pedidos`, pedido, {
+         headers: {
+            Authorization: `Bearer ${auth.token}`
+         }
+      });
       
       // leer la respuesta
       if(resultado.status === 200) {
