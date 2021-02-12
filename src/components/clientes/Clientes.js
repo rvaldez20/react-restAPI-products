@@ -18,7 +18,7 @@ function Clientes(props) {
 	// guardarClientes es la funcion que modifica el state
 	const [clientes, guardarClientes] = useState([]);
 
-	// utilizar valores del context
+	// Definicmos el context
 	const [auth, guardarAuth] = useContext(CRMContext);
 	
 
@@ -62,7 +62,7 @@ function Clientes(props) {
 	
 	}, [clientes]);
 
-	// si el state esta como false es para que ni siquiera entre al componente si no esta autorizado
+	// si el state esta como false es para que ni siquiera entre al componente si no esta
 	if(!auth.auth) props.history.push('/iniciar-sesion');
 
 	// spinner de carga

@@ -1,10 +1,13 @@
-import React, {Fragment, useState, useEffect} from 'react';
+import React, {Fragment, useState, useEffect, useContext} from 'react';
 import Swal from 'sweetalert2';
-import clienteAxios from '../../config/axios';
-
 import {withRouter} from 'react-router-dom';
 
+import clienteAxios from '../../config/axios';
+import { CRMContext } from '../../context/CRMContext';
+
+
 function EditarCliente(props) {
+
 
    // obtenemos el id props->match->parmas->id
    const { id } = props.match.params;
@@ -17,21 +20,34 @@ function EditarCliente(props) {
 		email: ''
 	});
 
+	// Definicmos el context
+	const [auth, guardarAuth] = useContext(CRMContext);
+
 
    // definimos useEffect cuando el componente carga
    useEffect( () => {
-		// Query a la API
-		const consultarAPI = async () => {
-      const clienteConsulta = await clienteAxios.get(`/clientes/${id}`);
+		if(!auth.token !== '') {
+			// Query a la API
+			const consultarAPI = async () => {
+			const clienteConsulta = await clienteAxios.get(`/clientes/${id}`, {
+				headers: {
+					Authorization: `Bearer ${auth.token}`
+				}
+			});
 
-      // para testear
-      // console.log(clienteConsulta.data);
+			// para testear
+			// console.log(clienteConsulta.data);
 
-      // lo guardamos en el state
-      datosCliente(clienteConsulta.data);
-   	}		
+			// lo guardamos en el state
+			datosCliente(clienteConsulta.data);
+			}		
 
-      consultarAPI();
+			consultarAPI();
+		} else {
+			//lo redireccionamos a iniciar-sesio
+			props.history.push('/iniciar-sesion');
+			
+		}			
    },[]);
 
 
@@ -53,7 +69,11 @@ function EditarCliente(props) {
       e.preventDefault();
 
       // peticion por axios
-      clienteAxios.put(`/clientes/${cliente._id}`, cliente)
+      clienteAxios.put(`/clientes/${cliente._id}`, cliente, {
+			headers: {
+				Authorization: `Bearer ${auth.token}`
+			}
+		})
          .then(res => {
             if(res.data.code === 11000) {
 					// existe un error de mongo
@@ -76,8 +96,6 @@ function EditarCliente(props) {
             // redireccionar
             props.history.push('/');
          })
-
-
    }
 
 
