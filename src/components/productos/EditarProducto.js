@@ -1,9 +1,10 @@
-import React, {Fragment, useState, useEffect} from 'react';
+import React, {Fragment, useState, useEffect, useContext} from 'react';
 import Swal from 'sweetalert2';
+
 import clienteAxios from '../../config/axios';
 import Spinner from '../layout/Spinner';
 import {withRouter} from 'react-router-dom';
-
+import { CRMContext } from '../../context/CRMContext';
 
 
 function EditarProductos(props) {
@@ -23,18 +24,32 @@ function EditarProductos(props) {
 	// otro state: archivo=state | guardaraArchivo=setState
 	const [archivo, guardarArchivo] = useState('');
 
+	// Definicmos el context
+	const [auth, guardarAuth] = useContext(CRMContext);
+
 
 	/******************** USEEFECTT *******************/
 	useEffect( () => {
-		// consulta a la API para obtener el producto a editar
-		const consultarAPI = async () => {
-			const productoConsulta = await clienteAxios.get(`/productos/${id}`)
-			// console.log(productoConsulta.data);
-			guardarProducto(productoConsulta.data);
-		}
+		if(!auth.token !== '') {
+			// consulta a la API para obtener el producto a editar
+			const consultarAPI = async () => {
+				const productoConsulta = await clienteAxios.get(`/productos/${id}`, {
+					headers: {
+						Authorization: `Bearer ${auth.token}`
+					}
+				});
+				// console.log(productoConsulta.data);
+				guardarProducto(productoConsulta.data);
+			}
 
-		// ejecutamos la consulta a la API
-		consultarAPI();
+			// ejecutamos la consulta a la API
+			consultarAPI();
+		} else {
+
+			//lo redireccionamos a iniciar-sesio
+			props.history.push('/iniciar-sesion');
+			
+		}
 	}, []);
 
 
@@ -70,7 +85,8 @@ function EditarProductos(props) {
 		try {
 			const res = await clienteAxios.put(`/productos/${id}`, formData, {
 				headers: {
-					'Content-Type': 'multipart/form-data'
+					'Content-Type': 'multipart/form-data',
+					'Authorization': `Bearer ${auth.token}`
 				}
 			});
 
@@ -151,7 +167,7 @@ function EditarProductos(props) {
 
 				<div className="enviar">
 						<input 	type="submit" 
-									class="btn btn-azul" 
+									className="btn btn-azul" 
 									value="Guardar Cambios"
 						/>
 				</div>
