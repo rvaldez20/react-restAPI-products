@@ -17,8 +17,11 @@ function EditarCliente(props) {
 		email: ''
 	});
 
-   // Query a la API
-   const consultarAPI = async () => {
+
+   // definimos useEffect cuando el componente carga
+   useEffect( () => {
+		// Query a la API
+		const consultarAPI = async () => {
       const clienteConsulta = await clienteAxios.get(`/clientes/${id}`);
 
       // para testear
@@ -26,11 +29,8 @@ function EditarCliente(props) {
 
       // lo guardamos en el state
       datosCliente(clienteConsulta.data);
-   }
+   	}		
 
-
-   // definimos useEffect cuando el componente carga
-   useEffect( () => {
       consultarAPI();
    },[]);
 
