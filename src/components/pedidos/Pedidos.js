@@ -19,15 +19,24 @@ function Pedidos(props){
 	useEffect(() => {
 		if(!auth.token !== '') {
 			const consultarAPI = async () => {
-				// obtener los pedidos
-				const resultado = await clienteAxios.get('/pedidos', {
-					headers: {
-						Authorization: `Bearer ${auth.token}`
-					}
-				});
 
-				// console.log(resultado.data)
-				guardarPedidos(resultado.data);
+				try {
+					// obtener los pedidos
+					const resultado = await clienteAxios.get('/pedidos', {
+						headers: {
+							Authorization: `Bearer ${auth.token}`
+						}
+					});
+
+					// console.log(resultado.data)
+					guardarPedidos(resultado.data);					
+				} catch (error) {
+					// Error con autorizacion (token expiro o no es valido) y redireccionamos
+					//  a iniciar sesion
+					if(error.response.status = 500) {
+						props.history.push('/iniciar-sesion');
+					}
+				}				
 			}
 
 			// llamamos la funcion
@@ -40,7 +49,7 @@ function Pedidos(props){
 		}
 	}, [])
 
-	// si el state esta como false es para que ni siquiera entre al componente si no esta
+	// si auth esta como false se redirecciona a inciciar sesion
 	if(!auth.auth) props.history.push('/iniciar-sesion');
 
    return (

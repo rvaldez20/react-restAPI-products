@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import clienteAxios from '../../config/axios';
 import FormBuscarProducto from './FormBuscarProducto';
 import FormCantidadProducto from './FormCantidadProducto';
+
 import { CRMContext } from '../../context/CRMContext';
 
 
@@ -35,19 +36,27 @@ function NuevoPedido(props){
       if(!auth.token !== '') {
          // obtenemos el cliente
          const consultarAPI = async () => {
-            // consultar cliente actual
-            const resultado = await clienteAxios.get(`/clientes/${id}`, {
-               headers: {
-                  Authorization: `Bearer ${auth.token}`
-               }
-            });
 
-            // Tests
-            // console.log(resultado.data);         
-            // Se guarda el cliente en el state
-            guardarCliente(resultado.data);
+            try {
+               // consultar cliente actual
+               const resultado = await clienteAxios.get(`/clientes/${id}`, {
+                  headers: {
+                     Authorization: `Bearer ${auth.token}`
+                  }
+               });
+
+               // Tests
+               // console.log(resultado.data);         
+               // Se guarda el cliente en el state
+               guardarCliente(resultado.data);                  
+            } catch (error) {
+               // Error con autorizacion (token expiro o no es valido) y redireccionamos
+					//  a iniciar sesion
+					if(error.response.status = 500) {
+						props.history.push('/iniciar-sesion');
+					}
+            }            
          }
-
          // ejecutamos la consulta
          consultarAPI();
 
@@ -92,10 +101,10 @@ function NuevoPedido(props){
          guardarProductos([...productos, productoResultado]);         
       } else {
          // si no hay producto
-         Swal.fire({
-            type: 'error',
+         Swal.fire({            
             title: 'No Resultados',
-            text: 'No hay resultados'
+            text: 'No hay resultados',
+            icon: 'error'
          });
       }
    }
@@ -193,23 +202,28 @@ function NuevoPedido(props){
       // leer la respuesta
       if(resultado.status === 200) {
          // alerta de todo bien
-         Swal.fire({
-            type: 'success',
+         Swal.fire({            
             title: 'Se Guardo Correctamente',
-            text: resultado.data.mensaje
+            text: resultado.data.mensaje,
+            icon: 'success'
          })
       } else {
          // alerta error
-         Swal.fire({
-            type: 'error',
+         Swal.fire({            
             title: 'Hubo un Error',
-            text: 'Vuelva a intentarlo'
+            text: 'Vuelva a intentarlo',
+            icon: 'error'
          });
       }
 
       // redireccionar
       props.history.push('/pedidos');
    }
+
+   // verificar si el usuario esta autenticado o no para proteger el componente
+	if(!auth.auth && (localStorage.getItem('token') === auth.token)) {
+		props.history.push('/iniciar-sesion');
+	}
    
    return (
 		<Fragment>
