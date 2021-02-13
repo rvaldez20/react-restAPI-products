@@ -18,7 +18,7 @@ function Productos(props) {
 
 	// Definicmos el context
 	const [auth, guardarAuth] = useContext(CRMContext);
-
+	console.log(auth)
 
 	/************ Definimos useEfectt para consultar la API ************/
 	useEffect( () => {
@@ -45,6 +45,9 @@ function Productos(props) {
 			
 		}			
 	}, [productos])
+
+	// si el state esta como false es para que ni siquiera entre al componente si no esta
+	if(!auth.auth) props.history.push('/iniciar-sesion');
 
 	// spinner de carga
 	if(!productos.length) return <Spinner />

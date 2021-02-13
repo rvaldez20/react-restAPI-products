@@ -40,6 +40,9 @@ function Pedidos(props){
 		}
 	}, [])
 
+	// si el state esta como false es para que ni siquiera entre al componente si no esta
+	if(!auth.auth) props.history.push('/iniciar-sesion');
+
    return (
 		<Fragment>
 			<h2>Pedidos</h2>
