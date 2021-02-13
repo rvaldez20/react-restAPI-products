@@ -33,13 +33,22 @@ function EditarProductos(props) {
 		if(!auth.token !== '') {
 			// consulta a la API para obtener el producto a editar
 			const consultarAPI = async () => {
-				const productoConsulta = await clienteAxios.get(`/productos/${id}`, {
-					headers: {
-						Authorization: `Bearer ${auth.token}`
+
+				try {
+					const productoConsulta = await clienteAxios.get(`/productos/${id}`, {
+						headers: {
+							Authorization: `Bearer ${auth.token}`
+						}
+					});
+					// console.log(productoConsulta.data);
+					guardarProducto(productoConsulta.data);
+				} catch (error) {
+					// Error con autorizacion (token expiro o no es valido) y redireccionamos
+					//  a iniciar sesion
+					if(error.response.status = 500) {
+						props.history.push('/iniciar-sesion');
 					}
-				});
-				// console.log(productoConsulta.data);
-				guardarProducto(productoConsulta.data);
+				}				
 			}
 
 			// ejecutamos la consulta a la API
@@ -115,11 +124,13 @@ function EditarProductos(props) {
 				text: 'Vuelva a intentarlo'
 			});
 		}		
-
 	}
 
 	// Extraer los valores del State
 	const { nombre, imagen, precio } = producto;
+
+	// si el state esta como false es para que ni siquiera entre al componente si no esta
+	if(!auth.auth) props.history.push('/iniciar-sesion');
 
 	if(!nombre) return <Spinner />
 

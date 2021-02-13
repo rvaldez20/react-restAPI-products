@@ -87,7 +87,10 @@ function NuevoProducto(props) {
 		guardarArchivo(e.target.files[0]);
 	}
 
-	/******************** METODOS *******************/
+	// verificar si el usuario esta autenticado o no para proteger el componente
+	if(!auth.auth && (localStorage.getItem('token') === auth.token)) {
+		props.history.push('/iniciar-sesion');
+	}
 
    return (
 		<Fragment>
@@ -128,7 +131,7 @@ function NuevoProducto(props) {
 
 				<div className="enviar">
 						<input 	type="submit" 
-									class="btn btn-azul" 
+									className="btn btn-azul" 
 									value="Agregar Producto"
 						/>
 				</div>
