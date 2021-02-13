@@ -18,22 +18,32 @@ function Productos(props) {
 
 	// Definicmos el context
 	const [auth, guardarAuth] = useContext(CRMContext);
-	console.log(auth)
+	// console.log(auth)
 
 	/************ Definimos useEfectt para consultar la API ************/
 	useEffect( () => {
 		if(!auth.token !== '') {
-			// Query a la API
+			
 			const consultarAPI = async () => {
-				const productosConsulta = await clienteAxios.get('/productos', {
-					headers: {
-						Authorization: `Bearer ${auth.token}`
-					}
-				});
-				// console.log(productosConsulta.data);
 
-				// guardamos los productos en el state
-				guardarProductos(productosConsulta.data);
+				try {
+					const productosConsulta = await clienteAxios.get('/productos', {
+						headers: {
+							Authorization: `Bearer ${auth.token}`
+						}
+					});
+					// console.log(productosConsulta.data);
+	
+					// guardamos los productos en el state
+					guardarProductos(productosConsulta.data);
+					
+				} catch (error) {
+					// Error con autorizacion (token expiro o no es valido) y redireccionamos
+					//  a iniciar sesion
+					if(error.response.status = 500) {
+						props.history.push('/iniciar-sesion');
+					}
+				}				
 			}
 
 			// llamado a la API

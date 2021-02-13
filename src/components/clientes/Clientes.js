@@ -52,7 +52,8 @@ function Clientes(props) {
 					}
 				}
 			}		
-				consultarAPI();	
+				
+			consultarAPI();	
 		} else {
 
 			//lo redireccionamos a iniciar-sesio

@@ -27,21 +27,28 @@ function EditarCliente(props) {
    // definimos useEffect cuando el componente carga
    useEffect( () => {
 		if(!auth.token !== '') {
+
 			// Query a la API
 			const consultarAPI = async () => {
-			const clienteConsulta = await clienteAxios.get(`/clientes/${id}`, {
-				headers: {
-					Authorization: `Bearer ${auth.token}`
-				}
-			});
 
-			// para testear
-			// console.log(clienteConsulta.data);
-
-			// lo guardamos en el state
-			datosCliente(clienteConsulta.data);
-			}		
-
+				try {
+					const clienteConsulta = await clienteAxios.get(`/clientes/${id}`, {
+						headers: {
+							Authorization: `Bearer ${auth.token}`
+						}
+					});					
+		
+					// lo guardamos en el state
+					datosCliente(clienteConsulta.data);					
+				} catch (error) {
+					// Error con autorizacion (token expiro o no es valido) y redireccionamos
+					//  a iniciar sesion
+					if(error.response.status = 500) {
+						props.history.push('/iniciar-sesion');
+					}
+				}								
+			}							
+					
 			consultarAPI();
 		} else {
 			//lo redireccionamos a iniciar-sesio
@@ -109,6 +116,11 @@ function EditarCliente(props) {
 
 		// return true or false
 		return valido;
+	}
+
+	// verificar si el usuario esta autenticado o no para proteger el componente
+	if(!auth.auth && (localStorage.getItem('token') === auth.token)) {
+		props.history.push('/iniciar-sesion');
 	}
 
 	return (

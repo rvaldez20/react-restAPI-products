@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 
 import clienteAxios from '../../config/axios';
 import {withRouter} from 'react-router-dom';
+
 import { CRMContext } from '../../context/CRMContext';
 
 function NuevoCliente({history}) {
@@ -77,6 +78,12 @@ function NuevoCliente({history}) {
 		// return true or false
 		return valido;
 	}
+
+	// verificar si el usuario esta autenticado o no para proteger el componente
+	if(!auth.auth && (localStorage.getItem('token') === auth.token)) {
+		history.push('/iniciar-sesion');
+	}
+
 
 	return (
 		<Fragment>

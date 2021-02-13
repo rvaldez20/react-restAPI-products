@@ -47,6 +47,8 @@ function Cliente(props) {
 			}
 		})
 	}
+
+	
 	
 	return(
 		<li className="cliente">
