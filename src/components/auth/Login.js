@@ -50,12 +50,22 @@ function Login(props) {
 
          
       } catch (error) {
-         console.log(error);
-         Swal.fire({
-            type: 'error',
-            title: 'Hubo un error',
-            text: error.response.data.mensaje
-         })
+         // console.log(error);
+         // Se reconfigura el error para que no rompa la aplicacon el forntend con react
+
+         if(error.response){
+            Swal.fire({            
+               title: 'Hubo un error',
+               text: error.response.data.mensaje,
+               icon: 'error'
+            })
+         } else {
+            Swal.fire({            
+               title: 'Hubo un error',
+               text: 'Error de apliccaión',
+               icon: 'error'
+            })
+         }         
       }
    }
 	
